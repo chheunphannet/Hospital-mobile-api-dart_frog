@@ -35,7 +35,7 @@ class Users {
   });
 
   factory Users.fromJson(Map<String, dynamic> json) => Users(
-    id: (json['_id'] as ObjectId).oid,
+    id: json['_id'] != null ? (json['_id'] as ObjectId).oid : null,
     email: json['email'] as String,
     phoneNumber: json['phoneNumber'] as String,
     googleId: json['googleId'] as String,
@@ -50,8 +50,8 @@ class Users {
     role: UserRole.values.byName((json['role'] as String).toLowerCase()),
     location: Location.fromJson(json['location'] as Map<String, dynamic>),
 
-    createdAt: json['createdAt'] as DateTime,
-    updatedAt: json['updatedAt'] as DateTime,
+    createdAt: json['createdAt'] as DateTime?,
+    updatedAt: json['updatedAt'] as DateTime?,
   );
 
   Map<String, dynamic> toJson() {

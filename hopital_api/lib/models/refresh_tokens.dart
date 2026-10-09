@@ -26,15 +26,15 @@ class RefreshTokens {
   });
 
   factory RefreshTokens.fromJson(Map<String, dynamic> json) => RefreshTokens(
-    id: (json['_id'] as ObjectId).oid,
+    id: json['_id'] != null ? (json['_id'] as ObjectId).oid : null,
     tokenHash: json['tokenHash'] as String,
     userId: json['userId'] as String,
     email: json['email'] as String,
     role: json['role'] as String,
     branchId: json['branchId'] as String,
     deviceInfo: DeviceInfo.fromJson(json['deviceInfo'] as Map<String, dynamic>),
-    createdAt: json['createdAt'] as DateTime,
-    expiresAt: json['expiresAt'] as DateTime,
+    createdAt: json['createdAt'] as DateTime?,
+    expiresAt: json['expiresAt'] as DateTime?,
     isRevoked: json['isRevoked'] as bool,
   );
 
