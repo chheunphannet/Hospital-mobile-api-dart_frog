@@ -1,7 +1,7 @@
 import 'package:mongo_dart/mongo_dart.dart';
 
-class ClinicsRepository {
-  ClinicsRepository(this._collection);
+class DoctorsRepository {
+  DoctorsRepository(this._collection);
 
   final DbCollection _collection;
 
@@ -10,14 +10,17 @@ class ClinicsRepository {
       'createIndexes': _collection.collectionName,
       'indexes': [
         {
-          'key': {'code': 1},
-          'unique': true,
-          'name': 'idx_branches_code_unique',
+          'key': {'branchIds': 1},
+          'name': 'idx_doctors_branchIds',
+        },
+        {
+          'key': {'clinicId': 1},
+          'name': 'idx_doctors_clinic_booking',
         },
       ],
     });
 
-    if (result['ok'] != 1) {
+    if (result['ok'] != null) {
       StateError('Failed to create index $result');
     }
   }

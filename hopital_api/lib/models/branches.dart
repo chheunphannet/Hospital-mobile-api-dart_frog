@@ -1,4 +1,7 @@
+import 'package:mongo_dart/mongo_dart.dart';
+
 class Branches {
+  final String? id;
   final String name;
   final String code;
   final List<String> contactNumbers;
@@ -9,6 +12,7 @@ class Branches {
   final List<Hardware> hardwares;
 
   const Branches({
+    this.id,
     required this.name,
     required this.code,
     required this.contactNumbers,
@@ -20,6 +24,7 @@ class Branches {
   });
 
   factory Branches.fromJson(Map<String, dynamic> json) => Branches(
+    id: json['id'] != null ? (json['id'] as ObjectId).oid : null,
     name: json['name'] as String,
     code: json['code'] as String,
     contactNumbers: (json['contactNumbers'] as List<dynamic>)
@@ -37,6 +42,7 @@ class Branches {
   );
 
   Map<String, dynamic> toJson() => {
+    'id': id,
     'name': name,
     'code': code,
     'contactNumbers': contactNumbers,
