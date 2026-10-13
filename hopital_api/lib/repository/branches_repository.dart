@@ -22,7 +22,9 @@ class BranchesRepository {
     });
 
     if (result['ok'] != 1) {
-      StateError('Failed to create index $result');
+      throw StateError('Failed to create index $result');
     }
   }
+
+  Future<void> createIndex() => createIndexes();
 }

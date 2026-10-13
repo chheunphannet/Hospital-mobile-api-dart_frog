@@ -1,4 +1,4 @@
-import 'dart:convert';
+
 
 class Packages {
   final String? id;
@@ -11,6 +11,47 @@ class Packages {
   final Inclusions inclusions;
   final Metadata metadata;
   final DateTime? createdAt;
+
+  const Packages({
+    required this.title,
+    required this.price,
+    required this.currency,
+    required this.posterUrl,
+    required this.isLimitedOffer,
+    required this.isActive,
+    required this.inclusions,
+    required this.metadata,
+    this.id,
+    this.createdAt,
+  });
+
+  factory Packages.fromJson(Map<String, dynamic> json) => Packages(
+    id: json['id'] as String?,
+    title: json['title'] as String,
+    price: (json['price'] as num).toDouble(),
+    currency: Currency.values.byName(json['currency'] as String),
+    posterUrl: json['posterUrl'] as String,
+    isLimitedOffer: json['isLimitedOffer'] as bool,
+    isActive: json['isActive'] as bool,
+    inclusions: Inclusions.fromJson(json['inclusions'] as Map<String, dynamic>),
+    metadata: Metadata.fromJson(json['metadata'] as Map<String, dynamic>),
+    createdAt: json['createdAt'] != null
+        ? DateTime.parse(json['createdAt'] as String)
+        : null,
+  );
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'title': title,
+    'price': price,
+    'currency': currency.name,
+    'posterUrl': posterUrl,
+    'isLimitedOffer': isLimitedOffer,
+    'isActive': isActive,
+    'inclusions': inclusions.toJson(),
+    'metadata': metadata.toJson(),
+    'createdAt': createdAt?.toIso8601String(),
+  };
 }
 
 class Inclusions {
@@ -53,6 +94,7 @@ class Inclusions {
     'completeBloodCounts': completeBloodCounts,
     'labTests': labTests,
     'urineAnalysisCount': urineAnalysisCount,
+    'ultrasoundsCount': ultrasoundsCount,
     'ntScreening': ntScreening,
     'supplements': supplements,
   };
@@ -64,6 +106,32 @@ class Metadata {
   final String termsAndConditions;
   final String branchNames;
   final List<String> supportedBranchIds;
+
+  const Metadata({
+    required this.prepaymentRequired,
+    required this.instructions,
+    required this.termsAndConditions,
+    required this.branchNames,
+    required this.supportedBranchIds,
+  });
+
+  factory Metadata.fromJson(Map<String, dynamic> json) => Metadata(
+    prepaymentRequired: json['prepaymentRequired'] as bool,
+    instructions: json['instructions'] as String,
+    termsAndConditions: json['termsAndConditions'] as String,
+    branchNames: json['branchNames'] as String,
+    supportedBranchIds: (json['supportedBranchIds'] as List)
+        .map((e) => e as String)
+        .toList(),
+  );
+
+  Map<String, dynamic> toJson() => {
+    'prepaymentRequired': prepaymentRequired,
+    'instructions': instructions,
+    'termsAndConditions': termsAndConditions,
+    'supportedBranchIds': supportedBranchIds,
+    'branchNames': branchNames,
+  };
 }
 
 enum Currency { usd, khr }

@@ -2,6 +2,10 @@ import 'dart:io';
 
 import 'package:dart_frog/dart_frog.dart';
 import 'package:hopital_api/config/env.dart';
+import 'package:hopital_api/repository/branches_repository.dart';
+import 'package:hopital_api/repository/clinics_repository.dart';
+import 'package:hopital_api/repository/doctors_repository.dart';
+import 'package:hopital_api/repository/packages_repository.dart';
 import 'package:hopital_api/repository/refresh_token_repository.dart';
 import 'package:hopital_api/repository/users_repository.dart';
 import 'package:hopital_api/service/mongo_service.dart';
@@ -19,10 +23,39 @@ Future<HttpServer> run(Handler handler, InternetAddress ip, int port) async {
     mongoService.collection('refresh_token'),
   );
   await refreshRepo.createIndex();
+
+  //packages
+  final packagesRepo = PackagesRepository(
+    mongoService.collection('packages'),
+  );
+  await packagesRepo.createIndex();
+
+  //branches
+  final branchesRepo = BranchesRepository(
+    mongoService.collection('branches'),
+  );
+  await branchesRepo.createIndex();
+
+  //clinics
+  final clinicsRepo = ClinicsRepository(
+    mongoService.collection('clinics'),
+  );
+  await clinicsRepo.createIndex();
+
+  //doctors
+  final doctorsRepo = DoctorsRepository(
+    mongoService.collection('doctors'),
+  );
+  await doctorsRepo.createIndex();
+
   return serve(
     handler
         .use(provider<UsersRepository>((_) => usersRepo))
-        .use(provider<RefreshTokenRepository>((_) => refreshRepo)),
+        .use(provider<RefreshTokenRepository>((_) => refreshRepo))
+        .use(provider<PackagesRepository>((_) => packagesRepo))
+        .use(provider<BranchesRepository>((_) => branchesRepo))
+        .use(provider<ClinicsRepository>((_) => clinicsRepo))
+        .use(provider<DoctorsRepository>((_) => doctorsRepo)),
     ip,
     port,
   );

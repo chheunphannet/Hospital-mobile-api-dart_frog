@@ -20,8 +20,10 @@ class DoctorsRepository {
       ],
     });
 
-    if (result['ok'] != null) {
-      StateError('Failed to create index $result');
+    if (result['ok'] != 1) {
+      throw StateError('Failed to create index $result');
     }
   }
+
+  Future<void> createIndex() => createIndexes();
 }
