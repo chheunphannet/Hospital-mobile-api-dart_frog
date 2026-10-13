@@ -35,17 +35,21 @@ class KnowledgeChunksRepository {
         'indexes': [
           {
             'name': 'vector_index',
-            'type': 'vectorSearch',
+            'type':
+                'vectorSearch', //enables k-Nearest Neighbor (kNN) mathematical calculations on AI embeddings
             'definition': {
               'fields': [
                 {
                   'type': 'vector',
-                  'path': 'embedding',
-                  'numDimensions': 768, // Index for Gemini (768 dimensions)
-                  'similarity': 'cosine',
+                  'path': 'embedding', // [0.0124, -0.0452, 0.0891, ...]
+                  'numDimensions':
+                      768, // Gemini converts any sentence into a list of exactly 768 numbers.
+                  'similarity':
+                      'cosine', // Cosine similarity measures the angle of meaning between two sentences, not just matching words.
                 },
                 {
-                  'type': 'filter',
+                  'type':
+                      'filter', // Enables pre-filtering before doing AI vector search
                   'path': 'sourceType',
                 },
                 {
