@@ -7,9 +7,12 @@
       "name": "hopital_api",
       "version": "1.0.0+1",
       "dependencies": [
+        "bcrypt",
+        "crypto",
         "dart_frog",
         "dart_jsonwebtoken",
         "dotenv",
+        "http",
         "logging",
         "mongo_dart"
       ],
@@ -62,6 +65,28 @@
     {
       "name": "dart_frog_lint",
       "version": "0.1.2",
+      "dependencies": []
+    },
+    {
+      "name": "crypto",
+      "version": "3.0.7",
+      "dependencies": [
+        "typed_data"
+      ]
+    },
+    {
+      "name": "http",
+      "version": "1.6.0",
+      "dependencies": [
+        "async",
+        "http_parser",
+        "meta",
+        "web"
+      ]
+    },
+    {
+      "name": "bcrypt",
+      "version": "1.2.0",
       "dependencies": []
     },
     {
@@ -370,6 +395,26 @@
       ]
     },
     {
+      "name": "web",
+      "version": "1.1.1",
+      "dependencies": []
+    },
+    {
+      "name": "meta",
+      "version": "1.19.0",
+      "dependencies": []
+    },
+    {
+      "name": "http_parser",
+      "version": "4.1.2",
+      "dependencies": [
+        "collection",
+        "source_span",
+        "string_scanner",
+        "typed_data"
+      ]
+    },
+    {
       "name": "clock",
       "version": "1.1.3",
       "dependencies": []
@@ -398,13 +443,6 @@
         "collection",
         "convert",
         "js"
-      ]
-    },
-    {
-      "name": "crypto",
-      "version": "3.0.7",
-      "dependencies": [
-        "typed_data"
       ]
     },
     {
@@ -477,11 +515,6 @@
       ]
     },
     {
-      "name": "meta",
-      "version": "1.19.0",
-      "dependencies": []
-    },
-    {
       "name": "args",
       "version": "2.7.0",
       "dependencies": []
@@ -498,16 +531,6 @@
       "name": "mime",
       "version": "2.1.0",
       "dependencies": []
-    },
-    {
-      "name": "http_parser",
-      "version": "4.1.2",
-      "dependencies": [
-        "collection",
-        "source_span",
-        "string_scanner",
-        "typed_data"
-      ]
     },
     {
       "name": "http_methods",
@@ -527,11 +550,6 @@
       "dependencies": [
         "web"
       ]
-    },
-    {
-      "name": "web",
-      "version": "1.1.1",
-      "dependencies": []
     },
     {
       "name": "vm_service",
@@ -657,16 +675,6 @@
       "version": "4.12.0",
       "dependencies": [
         "meta"
-      ]
-    },
-    {
-      "name": "http",
-      "version": "1.6.0",
-      "dependencies": [
-        "async",
-        "http_parser",
-        "meta",
-        "web"
       ]
     },
     {

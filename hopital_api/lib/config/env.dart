@@ -12,6 +12,7 @@ class Env {
       'ACCESS_TOKEN_TTL',
       'REFRESH_TOKEN_TTL',
       'IS_PROD',
+      'GOOGLE_CLIENT_ID',
       // 'DB_PASSWORD',
       // 'DB_HOST',
       // 'DB_PORT',
@@ -36,4 +37,5 @@ class Env {
   static int get accessTokenTTL => int.parse(_dotEnv['ACCESS_TOKEN_TTL']!);
   static int get refreshTokenTTL => int.parse(_dotEnv['REFRESH_TOKEN_TTL']!);
   static String get isProd => _dotEnv['IS_PROD']!;
+  static String get googleClientId => _dotEnv['GOOGLE_CLIENT_ID']!;
 }

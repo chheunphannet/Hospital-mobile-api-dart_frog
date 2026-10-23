@@ -1,6 +1,41 @@
+import 'dart:io';
 import 'package:dart_frog/dart_frog.dart';
+import 'package:hopital_api/exceptions/app_exception.dart';
+import 'package:hopital_api/models/refresh_tokens.dart';
+import 'package:hopital_api/service/auth_service.dart';
 
-Response onRequest(RequestContext context) {
-  // TODO: implement route handler
-  return Response(body: 'This is a new route!');
+Future<Response> onRequest(RequestContext context) async {
+  if (context.request.method != HttpMethod.post) {
+    return Response(statusCode: HttpStatus.methodNotAllowed);
+  }
+
+  final body = await context.request.json() as Map<String, dynamic>;
+  final email = body['email'] as String?;
+  final password = body['password'] as String?;
+  final phone = body['phone'] as String?;
+
+  if (email == null || email.isEmpty) {
+    throw const ValidationException('Email is required');
+  }
+  if (password == null || password.isEmpty) {
+    throw const ValidationException('Password is required');
+  }
+
+  DeviceInfo? deviceInfo;
+  if (body['deviceInfo'] is Map<String, dynamic>) {
+    deviceInfo = DeviceInfo.fromJson(body['deviceInfo'] as Map<String, dynamic>);
+  }
+
+  final authService = context.read<AuthService>();
+  final result = await authService.registerWithPassword(
+    email: email,
+    password: password,
+    phone: phone,
+    deviceInfo: deviceInfo,
+  );
+
+  return Response.json(
+    statusCode: HttpStatus.created,
+    body: result.toJson(),
+  );
 }

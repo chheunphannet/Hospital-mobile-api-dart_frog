@@ -15,6 +15,10 @@ import 'package:hopital_api/repository/news_repository.dart';
 import 'package:hopital_api/repository/packages_repository.dart';
 import 'package:hopital_api/repository/refresh_token_repository.dart';
 import 'package:hopital_api/repository/users_repository.dart';
+import 'package:hopital_api/client/google_auth_client.dart';
+import 'package:hopital_api/helper/hasher.dart';
+import 'package:hopital_api/service/auth_service.dart';
+import 'package:hopital_api/service/jwt_service.dart';
 import 'package:hopital_api/service/mongo_service.dart';
 import 'package:logging/logging.dart';
 
@@ -107,6 +111,18 @@ Future<HttpServer> run(Handler handler, InternetAddress ip, int port) async {
     );
   });
 
+  // Services
+  final jwt = JwtService();
+  final hasher = Hasher();
+  final googleAuthClient = GoogleAuthClient(clientId: Env.googleClientId);
+  final authService = AuthService(
+    userRepo: usersRepo,
+    jwtService: jwt,
+    googleAuthClient: googleAuthClient,
+    hasher: hasher,
+    refresh: refreshRepo,
+  );
+
   return serve(
     handler
         .use(provider<UsersRepository>((_) => usersRepo))
@@ -120,7 +136,9 @@ Future<HttpServer> run(Handler handler, InternetAddress ip, int port) async {
         .use(provider<FeedbacksRepository>((_) => feedbacksRepo))
         .use(provider<HealthTipsRepository>((_) => healthTipsRepo))
         .use(provider<KnowledgeChunksRepository>((_) => knowledgeChunksRepo))
-        .use(provider<ChatSessionsRepository>((_) => chatSessionsRepo)),
+        .use(provider<ChatSessionsRepository>((_) => chatSessionsRepo))
+        .use(provider<JwtService>((_) => jwt))
+        .use(provider<AuthService>((_) => authService)),
     ip,
     port,
   );

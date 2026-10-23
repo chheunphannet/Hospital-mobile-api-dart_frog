@@ -3,17 +3,17 @@ import 'package:mongo_dart/mongo_dart.dart';
 class Users {
   final String? id;
   final String email;
-  final String phoneNumber;
+  final String? phoneNumber;
   final String? passwordHash;
   final String? googleId;
-  final String authProvider;
-  final String avatarUrl;
+  final String authProvider; // 'local' or 'google'
+  final String? avatarUrl;
 
   final bool isEmailVerified;
 
-  final PersonalInfo personalInfo;
-  final UserRole role;
-  final Location location;
+  final PersonalInfo? personalInfo;
+  final UserRole role; //have default
+  final Location? location;
 
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -21,15 +21,15 @@ class Users {
   const Users({
     this.id,
     required this.email,
-    required this.phoneNumber,
+    this.phoneNumber,
     this.googleId,
     this.passwordHash,
-    required this.authProvider,
-    required this.avatarUrl,
-    required this.isEmailVerified,
-    required this.personalInfo,
-    required this.role,
-    required this.location,
+    this.authProvider = 'local',
+    this.avatarUrl,
+    this.isEmailVerified = false,
+    this.personalInfo,
+    this.role = UserRole.patient,
+    this.location,
     this.createdAt,
     this.updatedAt,
   });
@@ -37,22 +37,52 @@ class Users {
   factory Users.fromJson(Map<String, dynamic> json) => Users(
     id: json['_id'] != null ? (json['_id'] as ObjectId).oid : null,
     email: json['email'] as String,
-    phoneNumber: json['phoneNumber'] as String,
-    googleId: json['googleId'] as String,
-    authProvider: json['authProvider'] as String,
-    avatarUrl: json['avatarUrl'] as String,
-    isEmailVerified: json['isEmailVerified'] as bool,
-    passwordHash: json['passwordHash'] as String,
-    personalInfo: PersonalInfo.fromJson(
-      json['personalInfo'] as Map<String, dynamic>,
-    ),
+    phoneNumber: json['phoneNumber'] as String?,
+    googleId: json['googleId'] as String?,
+    authProvider: json['authProvider'] as String? ?? 'local',
+    avatarUrl: json['avatarUrl'] as String?,
+    isEmailVerified: json['isEmailVerified'] as bool? ?? false,
+    passwordHash: json['passwordHash'] as String?,
+    personalInfo: json['personalInfo'] != null
+        ? PersonalInfo.fromJson(
+            json['personalInfo'] as Map<String, dynamic>,
+          )
+        : null,
 
-    role: UserRole.values.byName((json['role'] as String).toLowerCase()),
-    location: Location.fromJson(json['location'] as Map<String, dynamic>),
-
-    createdAt: json['createdAt'] as DateTime?,
-    updatedAt: json['updatedAt'] as DateTime?,
+    role: json['role'] != null
+        ? UserRole.values.byName((json['role'] as String).toLowerCase())
+        : UserRole.patient,
+    location: json['location'] != null
+        ? Location.fromJson(json['location'] as Map<String, dynamic>)
+        : null,
+    createdAt: json['createdAt'] is DateTime
+        ? json['createdAt'] as DateTime
+        : (json['createdAt'] != null
+              ? DateTime.tryParse(json['createdAt'].toString())
+              : null),
+    updatedAt: json['updatedAt'] is DateTime
+        ? json['updatedAt'] as DateTime
+        : (json['updatedAt'] != null
+              ? DateTime.tryParse(json['updatedAt'].toString())
+              : null),
   );
+
+  Map<String, dynamic> toDocument() {
+    return {
+      'email': email,
+      'phoneNumber': phoneNumber,
+      'passwordHash': passwordHash,
+      'googleId': googleId,
+      'authProvider': authProvider,
+      'avatarUrl': avatarUrl,
+      'isEmailVerified': isEmailVerified,
+      'personalInfo': personalInfo?.toJson(),
+      'role': role.name,
+      'location': location?.toJson(),
+      'createdAt': createdAt ?? DateTime.now().toUtc(),
+      'updatedAt': updatedAt ?? DateTime.now().toUtc(),
+    };
+  }
 
   Map<String, dynamic> toJson() {
     return {
@@ -63,9 +93,9 @@ class Users {
       'authProvider': authProvider,
       'avatarUrl': avatarUrl,
       'isEmailVerified': isEmailVerified,
-      'personalInfo': personalInfo.toJson(),
+      'personalInfo': personalInfo?.toJson(),
       'role': role.name,
-      'location': location.toJson(),
+      'location': location?.toJson(),
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
     };

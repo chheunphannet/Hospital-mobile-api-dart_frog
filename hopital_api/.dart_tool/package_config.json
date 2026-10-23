@@ -38,6 +38,12 @@
       "languageVersion": "2.18"
     },
     {
+      "name": "bcrypt",
+      "rootUri": "file:///C:/Users/chheu/AppData/Local/Pub/Cache/hosted/pub.dev/bcrypt-1.2.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.7"
+    },
+    {
       "name": "boolean_selector",
       "rootUri": "file:///C:/Users/chheu/AppData/Local/Pub/Cache/hosted/pub.dev/boolean_selector-2.1.2",
       "packageUri": "lib/",
