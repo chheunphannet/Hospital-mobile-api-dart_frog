@@ -8,16 +8,16 @@
       "languageVersion": "3.11"
     },
     {
+      "name": "adaptive_number",
+      "rootUri": "file:///C:/Users/chheu/AppData/Local/Pub/Cache/hosted/pub.dev/adaptive_number-1.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "analyzer",
       "rootUri": "file:///C:/Users/chheu/AppData/Local/Pub/Cache/hosted/pub.dev/analyzer-14.4.0",
       "packageUri": "lib/",
       "languageVersion": "3.11"
-    },
-    {
-      "name": "archive",
-      "rootUri": "file:///C:/Users/chheu/AppData/Local/Pub/Cache/hosted/pub.dev/archive-4.3.0",
-      "packageUri": "lib/",
-      "languageVersion": "3.0"
     },
     {
       "name": "args",
@@ -33,7 +33,7 @@
     },
     {
       "name": "basic_utils",
-      "rootUri": "file:///C:/Users/chheu/AppData/Local/Pub/Cache/hosted/pub.dev/basic_utils-5.8.2",
+      "rootUri": "file:///C:/Users/chheu/AppData/Local/Pub/Cache/hosted/pub.dev/basic_utils-5.7.0",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
@@ -104,6 +104,12 @@
       "languageVersion": "3.0"
     },
     {
+      "name": "dart_jsonwebtoken",
+      "rootUri": "file:///C:/Users/chheu/AppData/Local/Pub/Cache/hosted/pub.dev/dart_jsonwebtoken-2.17.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "decimal",
       "rootUri": "file:///C:/Users/chheu/AppData/Local/Pub/Cache/hosted/pub.dev/decimal-3.2.6",
       "packageUri": "lib/",
@@ -116,10 +122,10 @@
       "languageVersion": "2.16"
     },
     {
-      "name": "ffi",
-      "rootUri": "file:///C:/Users/chheu/AppData/Local/Pub/Cache/hosted/pub.dev/ffi-2.2.0",
+      "name": "ed25519_edwards",
+      "rootUri": "file:///C:/Users/chheu/AppData/Local/Pub/Cache/hosted/pub.dev/ed25519_edwards-0.3.2",
       "packageUri": "lib/",
-      "languageVersion": "3.7"
+      "languageVersion": "2.12"
     },
     {
       "name": "file",
@@ -186,6 +192,12 @@
       "rootUri": "file:///C:/Users/chheu/AppData/Local/Pub/Cache/hosted/pub.dev/io-1.1.0",
       "packageUri": "lib/",
       "languageVersion": "3.4"
+    },
+    {
+      "name": "js",
+      "rootUri": "file:///C:/Users/chheu/AppData/Local/Pub/Cache/hosted/pub.dev/js-0.7.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.7"
     },
     {
       "name": "json_annotation",
@@ -261,7 +273,7 @@
     },
     {
       "name": "pointycastle",
-      "rootUri": "file:///C:/Users/chheu/AppData/Local/Pub/Cache/hosted/pub.dev/pointycastle-4.0.0",
+      "rootUri": "file:///C:/Users/chheu/AppData/Local/Pub/Cache/hosted/pub.dev/pointycastle-3.9.1",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
@@ -270,12 +282,6 @@
       "rootUri": "file:///C:/Users/chheu/AppData/Local/Pub/Cache/hosted/pub.dev/pool-1.5.3",
       "packageUri": "lib/",
       "languageVersion": "3.4"
-    },
-    {
-      "name": "posix",
-      "rootUri": "file:///C:/Users/chheu/AppData/Local/Pub/Cache/hosted/pub.dev/posix-6.5.2",
-      "packageUri": "lib/",
-      "languageVersion": "3.0"
     },
     {
       "name": "power_extensions",

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dart_frog/dart_frog.dart';
@@ -15,6 +16,7 @@ import 'package:hopital_api/repository/packages_repository.dart';
 import 'package:hopital_api/repository/refresh_token_repository.dart';
 import 'package:hopital_api/repository/users_repository.dart';
 import 'package:hopital_api/service/mongo_service.dart';
+import 'package:logging/logging.dart';
 
 Future<HttpServer> run(Handler handler, InternetAddress ip, int port) async {
   Env.init();
@@ -89,6 +91,21 @@ Future<HttpServer> run(Handler handler, InternetAddress ip, int port) async {
     mongoService.collection('chat_sessions'),
   );
   await chatSessionsRepo.createIndex();
+
+  //logging
+  Logger.root.level = Env.isProd == 'production' ? Level.INFO : Level.ALL;
+  Logger.root.onRecord.listen((r) {
+    stdout.writeln(
+      jsonEncode({
+        'time': r.time.toUtc().toIso8601String(),
+        'level': r.level.name,
+        'logger': r.loggerName,
+        'message': r.message,
+        if (r.error != null) 'error': r.error.toString(),
+        if (r.stackTrace != null) 'stackTrace': r.stackTrace.toString(),
+      }),
+    );
+  });
 
   return serve(
     handler
