@@ -20,4 +20,4 @@ services:
 volumes:
   mongo_data:
 
-# mongosh -u cheun -p "chheun^^1223" --authenticationDatabase admin "mongodb://127.0.0.1:27018/hospital_nosql"
+# mongosh -u chheun -p "chheun^^1223" --authenticationDatabase admin "mongodb://127.0.0.1:27018/hospital_nosql"

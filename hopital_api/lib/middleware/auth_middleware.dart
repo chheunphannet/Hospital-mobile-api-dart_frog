@@ -18,3 +18,26 @@ Middleware authMiddleware() {
     };
   };
 }
+
+Middleware requireRole(String requiredRole) {
+  return (handler) {
+    return (context) async {
+      final header = context.request.headers['Authorization'];
+      if (header == null || !header.startsWith('Bearer ')) {
+        throw const UnauthorizedException('Missing token');
+      }
+
+      final jwt = context.read<JwtService>().verifyAccessToken(
+        header.substring(7),
+      );
+      final payload = jwt.payload as Map<String, dynamic>;
+      final role = payload['role'] as String?;
+
+      if (role != requiredRole) {
+        throw ForbiddenException('Access restricted to $requiredRole only');
+      }
+
+      return handler(context.provide<JWT>(() => jwt));
+    };
+  };
+}

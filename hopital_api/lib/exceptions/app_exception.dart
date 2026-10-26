@@ -31,6 +31,12 @@ class UnauthorizedException extends AppException {
   : super(message, statusCode: 401, code: 'UNAUTHORIZED');
 }
 
+class ForbiddenException extends AppException {
+  const ForbiddenException([
+    String message = 'Forbidden: Insufficient permissions',
+  ]) : super(message, statusCode: 403, code: 'FORBIDDEN');
+}
+
 class ConflictException extends AppException {
   const ConflictException(String message)
     : super(message, statusCode: 409, code: 'CONFLICT');
@@ -39,4 +45,9 @@ class ConflictException extends AppException {
 class TokenExpiredException extends AppException {
   const TokenExpiredException()
     : super('Token expired', statusCode: 401, code: 'TOKEN_EXPIRED');
+}
+
+class ExternalServiceException extends AppException {
+  const ExternalServiceException([String message = 'AI service unavailable'])
+    : super(message, statusCode: 502, code: 'EXTERNAL_SERVICE_ERROR');
 }

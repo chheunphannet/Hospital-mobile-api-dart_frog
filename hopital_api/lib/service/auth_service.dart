@@ -29,9 +29,7 @@ class AuthService {
   final Hasher _hasher;
   final RefreshTokenRepository _refresh;
 
-  static final _log = Logger('AuthService');
 
-  // 1. Register with Email and Password
   Future<AuthResult> registerWithPassword({
     required String email,
     required String password,

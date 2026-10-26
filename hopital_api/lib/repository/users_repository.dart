@@ -9,6 +9,34 @@ class UsersRepository {
   final DbCollection _collection;
   static final _log = Logger('UsersRepository');
 
+  Future<Users?> updatedProfile({
+    required String userId,
+    Map<String, dynamic>? personalInfo,
+    Map<String, dynamic>? location,
+    String? phoneNumber,
+    bool? isProfileCompleted,
+    String? avatarUrl,
+  }) async {
+    final modifier = modify.set('updatedAt', DateTime.now().toUtc());
+
+    if (phoneNumber != null) modifier.set('phoneNumber', phoneNumber);
+    if (personalInfo != null) modifier.set('personalInfo', personalInfo);
+    if (location != null) modifier.set('location', location);
+    if (avatarUrl != null) modifier.set('avatarUrl', avatarUrl);
+    if (isProfileCompleted != null) {
+      modifier.set('isProfileCompleted', isProfileCompleted);
+    }
+
+    final result = await _collection.findAndModify(
+      query: where.id(ObjectId.fromHexString(userId)),
+      update: modifier,
+      returnNew: true, // return new updated doc
+    );
+
+    if (result == null) return null;
+    return Users.fromJson(result);
+  }
+
   Future<void> createIndex() async {
     final result = await _collection.db.runCommand(
       {
@@ -41,6 +69,10 @@ class UsersRepository {
 
     if (!result.isSuccess) {
       if (result.writeError?.code == 11000) {
+        final errmsg = result.writeError?.errmsg ?? '';
+        if (errmsg.contains('googleId')) {
+          throw const ConflictException('Google account already registered');
+        }
         throw const ConflictException('Email already registered');
       }
       _log.info('Failed to insert user: ${result.errmsg}');

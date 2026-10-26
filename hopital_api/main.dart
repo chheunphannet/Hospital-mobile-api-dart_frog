@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dart_frog/dart_frog.dart';
+import 'package:hopital_api/client/embedding_client.dart';
 import 'package:hopital_api/config/env.dart';
 import 'package:hopital_api/repository/appointments_repository.dart';
 import 'package:hopital_api/repository/branches_repository.dart';
@@ -110,6 +111,13 @@ Future<HttpServer> run(Handler handler, InternetAddress ip, int port) async {
       }),
     );
   });
+
+  final embeddingClient = EmbeddingClient(apiKey: Env.geminiApiKey);
+  final v = await embeddingClient.embed(
+    'cardiologist',
+    task: EmbeddingTask.query,
+  );
+  Logger('Test').info('Embedding length: ${v.length}'); // expect 768
 
   // Services
   final jwt = JwtService();

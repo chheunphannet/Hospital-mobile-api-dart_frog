@@ -1,3 +1,5 @@
+import 'package:mongo_dart/mongo_dart.dart';
+
 class Feedbacks {
   final String? id;
   final String patientId;
@@ -20,8 +22,14 @@ class Feedbacks {
   });
 
   factory Feedbacks.fromJson(Map<String, dynamic> json) => Feedbacks(
-    id: json['id'] as String?,
-    patientId: json['patientId'] as String,
+    id: json['_id'] != null
+        ? (json['_id'] is ObjectId
+            ? (json['_id'] as ObjectId).oid
+            : json['_id'].toString())
+        : (json['id'] as String?),
+    patientId: json['patientId'] is ObjectId
+        ? (json['patientId'] as ObjectId).oid
+        : json['patientId'].toString(),
     personalInfo: FeedbackPersonalInfo.fromJson(
       json['personalInfo'] as Map<String, dynamic>,
     ),
@@ -37,10 +45,22 @@ class Feedbacks {
     adminWorkflow: AdminWorkflow.fromJson(
       json['adminWorkflow'] as Map<String, dynamic>,
     ),
-    createdAt: json['createdAt'] != null
-        ? DateTime.parse(json['createdAt'] as String)
-        : null,
+    createdAt: json['createdAt'] is DateTime
+        ? json['createdAt'] as DateTime
+        : (json['createdAt'] != null
+            ? DateTime.tryParse(json['createdAt'].toString())
+            : null),
   );
+
+  Map<String, dynamic> toDocument() => {
+    'patientId': _toObjectId(patientId) ?? patientId,
+    'personalInfo': personalInfo.toDocument(),
+    'contact': contact.toJson(),
+    'visitDetails': visitDetails.toDocument(),
+    'feedback': feedback.toJson(),
+    'adminWorkflow': adminWorkflow.toDocument(),
+    'createdAt': createdAt ?? DateTime.now().toUtc(),
+  };
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -73,10 +93,22 @@ class FeedbackPersonalInfo {
       FeedbackPersonalInfo(
         firstName: json['firstName'] as String,
         lastName: json['lastName'] as String,
-        nationality: json['nationality'] as String,
-        role: json['role'] as String,
-        dob: json['dob'] != null ? DateTime.parse(json['dob'] as String) : null,
+        nationality: json['nationality'] as String? ?? '',
+        role: json['role'] as String? ?? 'patient',
+        dob: json['dob'] is DateTime
+            ? json['dob'] as DateTime
+            : (json['dob'] != null
+                ? DateTime.tryParse(json['dob'].toString())
+                : null),
       );
+
+  Map<String, dynamic> toDocument() => {
+    'firstName': firstName,
+    'lastName': lastName,
+    'nationality': nationality,
+    'role': role,
+    if (dob != null) 'dob': dob,
+  };
 
   Map<String, dynamic> toJson() => {
     'firstName': firstName,
@@ -100,9 +132,9 @@ class FeedbackContact {
 
   factory FeedbackContact.fromJson(Map<String, dynamic> json) =>
       FeedbackContact(
-        phoneNumber: json['phoneNumber'] as String,
-        email: json['email'] as String,
-        responseRequired: json['responseRequired'] as bool,
+        phoneNumber: json['phoneNumber'] as String? ?? '',
+        email: json['email'] as String? ?? '',
+        responseRequired: json['responseRequired'] as bool? ?? false,
       );
 
   Map<String, dynamic> toJson() => {
@@ -122,9 +154,16 @@ class VisitDetails {
   });
 
   factory VisitDetails.fromJson(Map<String, dynamic> json) => VisitDetails(
-    clinicId: json['clinicId'] as String,
-    clinicName: json['clinicName'] as String,
+    clinicId: json['clinicId'] is ObjectId
+        ? (json['clinicId'] as ObjectId).oid
+        : json['clinicId'].toString(),
+    clinicName: json['clinicName'] as String? ?? '',
   );
+
+  Map<String, dynamic> toDocument() => {
+    'clinicId': _toObjectId(clinicId) ?? clinicId,
+    'clinicName': clinicName,
+  };
 
   Map<String, dynamic> toJson() => {
     'clinicId': clinicId,
@@ -144,9 +183,9 @@ class FeedbackDetail {
   });
 
   factory FeedbackDetail.fromJson(Map<String, dynamic> json) => FeedbackDetail(
-    type: json['type'] as String,
-    title: json['title'] as String,
-    message: json['message'] as String,
+    type: json['type'] as String? ?? 'general',
+    title: json['title'] as String? ?? '',
+    message: json['message'] as String? ?? '',
   );
 
   Map<String, dynamic> toJson() => {
@@ -157,26 +196,39 @@ class FeedbackDetail {
 }
 
 class AdminWorkflow {
-  final String status; //"pending"  "in_progress"  "resolved"
-  final String priority; //Knows what to fix first
+  final String status;
+  final String priority;
   final String? assignedStaffId;
-  final List<String> internalNotes; //Notes between staff like
+  final List<String> internalNotes;
 
   const AdminWorkflow({
-    required this.status,
-    required this.priority,
-    required this.internalNotes,
+    this.status = 'pending',
+    this.priority = 'normal',
+    this.internalNotes = const [],
     this.assignedStaffId,
   });
 
   factory AdminWorkflow.fromJson(Map<String, dynamic> json) => AdminWorkflow(
-    status: json['status'] as String,
-    priority: json['priority'] as String,
-    assignedStaffId: json['assignedStaffId'] as String?,
-    internalNotes: (json['internalNotes'] as List)
-        .map((e) => e as String)
-        .toList(),
+    status: json['status'] as String? ?? 'pending',
+    priority: json['priority'] as String? ?? 'normal',
+    assignedStaffId: json['assignedStaffId'] != null
+        ? (json['assignedStaffId'] is ObjectId
+            ? (json['assignedStaffId'] as ObjectId).oid
+            : json['assignedStaffId'].toString())
+        : null,
+    internalNotes: (json['internalNotes'] as List<dynamic>?)
+            ?.map((e) => e as String)
+            .toList() ??
+        const [],
   );
+
+  Map<String, dynamic> toDocument() => {
+    'status': status,
+    'priority': priority,
+    if (assignedStaffId != null)
+      'assignedStaffId': _toObjectId(assignedStaffId) ?? assignedStaffId,
+    'internalNotes': internalNotes,
+  };
 
   Map<String, dynamic> toJson() => {
     'status': status,
@@ -184,4 +236,13 @@ class AdminWorkflow {
     'assignedStaffId': assignedStaffId,
     'internalNotes': internalNotes,
   };
+}
+
+ObjectId? _toObjectId(String? id) {
+  if (id == null) return null;
+  try {
+    return ObjectId.fromHexString(id);
+  } catch (_) {
+    return null;
+  }
 }

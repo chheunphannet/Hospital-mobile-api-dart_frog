@@ -24,22 +24,40 @@ class Branches {
   });
 
   factory Branches.fromJson(Map<String, dynamic> json) => Branches(
-    id: json['id'] != null ? (json['id'] as ObjectId).oid : null,
+    id: json['_id'] != null
+        ? (json['_id'] is ObjectId
+            ? (json['_id'] as ObjectId).oid
+            : json['_id'].toString())
+        : (json['id'] as String?),
     name: json['name'] as String,
     code: json['code'] as String,
-    contactNumbers: (json['contactNumbers'] as List<dynamic>)
-        .map((number) => number as String)
-        .toList(),
+    contactNumbers: (json['contactNumbers'] as List<dynamic>?)
+            ?.map((number) => number as String)
+            .toList() ??
+        const [],
     email: json['email'] as String,
     address: json['address'] as String,
     location: Location.fromJson(json['location'] as Map<String, dynamic>),
-    rooms: (json['rooms'] as List<dynamic>)
-        .map((item) => Room.fromJson(item as Map<String, dynamic>))
-        .toList(),
-    hardwares: (json['hardware'] as List<dynamic>)
-        .map((item) => Hardware.fromJson(item as Map<String, dynamic>))
-        .toList(),
+    rooms: (json['rooms'] as List<dynamic>?)
+            ?.map((item) => Room.fromJson(item as Map<String, dynamic>))
+            .toList() ??
+        const [],
+    hardwares: ((json['hardware'] ?? json['hardwares']) as List<dynamic>?)
+            ?.map((item) => Hardware.fromJson(item as Map<String, dynamic>))
+            .toList() ??
+        const [],
   );
+
+  Map<String, dynamic> toDocument() => {
+    'name': name,
+    'code': code,
+    'contactNumbers': contactNumbers,
+    'email': email,
+    'address': address,
+    'location': location.toJson(),
+    'rooms': rooms.map((room) => room.toJson()).toList(),
+    'hardware': hardwares.map((item) => item.toJson()).toList(),
+  };
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -72,7 +90,6 @@ class Location {
 
 class Room {
   final String type;
-  // final String roomNum;
   final List<String> roomPhotos;
   final String context;
 

@@ -10,6 +10,7 @@ class Users {
   final String? avatarUrl;
 
   final bool isEmailVerified;
+  final bool isProfileCompleted;
 
   final PersonalInfo? personalInfo;
   final UserRole role; //have default
@@ -21,6 +22,7 @@ class Users {
   const Users({
     this.id,
     required this.email,
+    this.isProfileCompleted = false,
     this.phoneNumber,
     this.googleId,
     this.passwordHash,
@@ -42,6 +44,7 @@ class Users {
     authProvider: json['authProvider'] as String? ?? 'local',
     avatarUrl: json['avatarUrl'] as String?,
     isEmailVerified: json['isEmailVerified'] as bool? ?? false,
+    isProfileCompleted: json['isProfileCompleted'] as bool? ?? false,
     passwordHash: json['passwordHash'] as String?,
     personalInfo: json['personalInfo'] != null
         ? PersonalInfo.fromJson(
@@ -70,15 +73,16 @@ class Users {
   Map<String, dynamic> toDocument() {
     return {
       'email': email,
-      'phoneNumber': phoneNumber,
-      'passwordHash': passwordHash,
-      'googleId': googleId,
+      if (phoneNumber != null) 'phoneNumber': phoneNumber,
+      if (passwordHash != null) 'passwordHash': passwordHash,
+      if (googleId != null) 'googleId': googleId,
       'authProvider': authProvider,
-      'avatarUrl': avatarUrl,
+      if (avatarUrl != null) 'avatarUrl': avatarUrl,
       'isEmailVerified': isEmailVerified,
-      'personalInfo': personalInfo?.toJson(),
+      'isProfileCompleted': isProfileCompleted,
+      if (personalInfo != null) 'personalInfo': personalInfo?.toJson(),
       'role': role.name,
-      'location': location?.toJson(),
+      if (location != null) 'location': location?.toJson(),
       'createdAt': createdAt ?? DateTime.now().toUtc(),
       'updatedAt': updatedAt ?? DateTime.now().toUtc(),
     };
@@ -93,6 +97,7 @@ class Users {
       'authProvider': authProvider,
       'avatarUrl': avatarUrl,
       'isEmailVerified': isEmailVerified,
+      'isProfileCompleted': isProfileCompleted,
       'personalInfo': personalInfo?.toJson(),
       'role': role.name,
       'location': location?.toJson(),

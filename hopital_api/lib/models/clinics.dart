@@ -16,24 +16,45 @@ class Clinics {
     required this.description,
     required this.logoUrl,
     required this.supportedBranchIds,
-    required this.isActive,
+    this.isActive = true,
   });
 
   factory Clinics.fromJson(Map<String, dynamic> json) => Clinics(
-    id: json['id'] != null ? (json['id'] as ObjectId).oid : null,
+    id: json['_id'] != null
+        ? (json['_id'] is ObjectId
+            ? (json['_id'] as ObjectId).oid
+            : json['_id'].toString())
+        : (json['id'] as String?),
     name: json['name'] as String,
     code: json['code'] as String,
-    description: json['description'] as String,
-    logoUrl: json['logoUrl'] as String,
-    supportedBranchIds: (json['supportedBranchIds'] as List)
-        .map((e) => e as String)
-        .toList(),
-    isActive: json['isActive'] as bool,
+    description: json['description'] as String? ?? '',
+    logoUrl: json['logoUrl'] as String? ?? '',
+    supportedBranchIds: (json['supportedBranchIds'] as List<dynamic>?)
+            ?.map((e) => e is ObjectId ? e.oid : e.toString())
+            .toList() ??
+        const [],
+    isActive: json['isActive'] as bool? ?? true,
   );
+
+  Map<String, dynamic> toDocument() => {
+    'name': name,
+    'code': code,
+    'description': description,
+    'logoUrl': logoUrl,
+    'supportedBranchIds': supportedBranchIds.map((id) {
+      try {
+        return ObjectId.fromHexString(id);
+      } catch (_) {
+        return id;
+      }
+    }).toList(),
+    'isActive': isActive,
+  };
 
   Map<String, dynamic> toJson() => {
     'id': id,
     'name': name,
+    'code': code,
     'description': description,
     'logoUrl': logoUrl,
     'supportedBranchIds': supportedBranchIds,

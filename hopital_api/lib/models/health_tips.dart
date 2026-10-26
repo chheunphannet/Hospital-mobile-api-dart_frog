@@ -1,3 +1,5 @@
+import 'package:mongo_dart/mongo_dart.dart';
+
 class HealthTips {
   final String? id;
   final String title;
@@ -12,25 +14,44 @@ class HealthTips {
     required this.title,
     required this.clinic,
     required this.posterUrl,
-    required this.isPopular,
-    required this.viewCount,
-    required this.publishedAt,
     required this.contentBlocks,
+    required this.publishedAt,
+    this.isPopular = false,
+    this.viewCount = 0,
     this.id,
   });
 
   factory HealthTips.fromJson(Map<String, dynamic> json) => HealthTips(
-    id: json['id'] as String?,
+    id: json['_id'] != null
+        ? (json['_id'] is ObjectId
+            ? (json['_id'] as ObjectId).oid
+            : json['_id'].toString())
+        : (json['id'] as String?),
     title: json['title'] as String,
     clinic: json['clinic'] as String,
-    posterUrl: json['posterUrl'] as String,
-    isPopular: json['isPopular'] as bool,
-    viewCount: json['viewCount'] as int,
-    publishedAt: DateTime.parse(json['publishedAt'] as String),
-    contentBlocks: (json['contentBlocks'] as List)
-        .map((e) => ContentBlock.fromJson(e as Map<String, dynamic>))
-        .toList(),
+    posterUrl: json['posterUrl'] as String? ?? '',
+    isPopular: json['isPopular'] as bool? ?? false,
+    viewCount: (json['viewCount'] as num?)?.toInt() ?? 0,
+    publishedAt: json['publishedAt'] is DateTime
+        ? json['publishedAt'] as DateTime
+        : (json['publishedAt'] != null
+            ? DateTime.parse(json['publishedAt'].toString())
+            : DateTime.now().toUtc()),
+    contentBlocks: (json['contentBlocks'] as List<dynamic>?)
+            ?.map((e) => ContentBlock.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        const [],
   );
+
+  Map<String, dynamic> toDocument() => {
+    'title': title,
+    'clinic': clinic,
+    'posterUrl': posterUrl,
+    'isPopular': isPopular,
+    'viewCount': viewCount,
+    'publishedAt': publishedAt,
+    'contentBlocks': contentBlocks.map((e) => e.toJson()).toList(),
+  };
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -56,9 +77,9 @@ class ContentBlock {
   });
 
   factory ContentBlock.fromJson(Map<String, dynamic> json) => ContentBlock(
-    imageUrl: json['imageUrl'] as String,
-    caption: json['caption'] as String,
-    text: json['text'] as String,
+    imageUrl: json['imageUrl'] as String? ?? '',
+    caption: json['caption'] as String? ?? '',
+    text: json['text'] as String? ?? '',
   );
 
   Map<String, dynamic> toJson() => {

@@ -1,5 +1,7 @@
 
 
+import 'package:mongo_dart/mongo_dart.dart';
+
 class Packages {
   final String? id;
   final String title;
@@ -26,18 +28,24 @@ class Packages {
   });
 
   factory Packages.fromJson(Map<String, dynamic> json) => Packages(
-    id: json['id'] as String?,
+    id: json['_id'] != null
+        ? (json['_id'] is ObjectId
+            ? (json['_id'] as ObjectId).oid
+            : json['_id'].toString())
+        : (json['id'] as String?),
     title: json['title'] as String,
     price: (json['price'] as num).toDouble(),
     currency: Currency.values.byName(json['currency'] as String),
-    posterUrl: json['posterUrl'] as String,
-    isLimitedOffer: json['isLimitedOffer'] as bool,
-    isActive: json['isActive'] as bool,
+    posterUrl: json['posterUrl'] as String? ?? '',
+    isLimitedOffer: json['isLimitedOffer'] as bool? ?? false,
+    isActive: json['isActive'] as bool? ?? true,
     inclusions: Inclusions.fromJson(json['inclusions'] as Map<String, dynamic>),
     metadata: Metadata.fromJson(json['metadata'] as Map<String, dynamic>),
-    createdAt: json['createdAt'] != null
-        ? DateTime.parse(json['createdAt'] as String)
-        : null,
+    createdAt: json['createdAt'] is DateTime
+        ? json['createdAt'] as DateTime
+        : (json['createdAt'] != null
+            ? DateTime.tryParse(json['createdAt'].toString())
+            : null),
   );
 
   Map<String, dynamic> toJson() => {
@@ -116,13 +124,14 @@ class Metadata {
   });
 
   factory Metadata.fromJson(Map<String, dynamic> json) => Metadata(
-    prepaymentRequired: json['prepaymentRequired'] as bool,
-    instructions: json['instructions'] as String,
-    termsAndConditions: json['termsAndConditions'] as String,
-    branchNames: json['branchNames'] as String,
-    supportedBranchIds: (json['supportedBranchIds'] as List)
-        .map((e) => e as String)
-        .toList(),
+    prepaymentRequired: json['prepaymentRequired'] as bool? ?? false,
+    instructions: json['instructions'] as String? ?? '',
+    termsAndConditions: json['termsAndConditions'] as String? ?? '',
+    branchNames: json['branchNames'] as String? ?? '',
+    supportedBranchIds: (json['supportedBranchIds'] as List<dynamic>?)
+            ?.map((e) => e is ObjectId ? e.oid : e.toString())
+            .toList() ??
+        const [],
   );
 
   Map<String, dynamic> toJson() => {
