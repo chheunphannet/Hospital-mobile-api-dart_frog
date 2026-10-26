@@ -1,23 +1,23 @@
 services:
   mongo:
-    image: mongo:8.0
+    image: mongodb/mongodb-atlas-local:8.0
     container_name: mongodb_hospital_api
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: chheun
-      MONGO_INITDB_ROOT_PASSWORD: chheun^^1223 
-      MONGO_INITDB_DATABASE: hospital_nosql
+      MONGODB_INITDB_ROOT_USERNAME: chheun
+      MONGODB_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
     ports:
       - "27018:27017"
     volumes:
       - mongo_data:/data/db
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - mongo_config:/data/configdb
 
 volumes:
   mongo_data:
+  mongo_config:
 
-# mongosh -u chheun -p "chheun^^1223" --authenticationDatabase admin "mongodb://127.0.0.1:27018/hospital_nosql"
+# Connect directly inside the Docker container via CMD:
+# docker exec -it mongodb_hospital_api mongosh hospital_nosql -u chheun -p "chheun^^1223" --authenticationDatabase admin
+
+# Or connect from host CMD via mongosh:
+# mongosh -u chheun -p "chheun^^1223" --authenticationDatabase admin "mongodb://127.0.0.1:27018/hospital_nosql?directConnection=true"

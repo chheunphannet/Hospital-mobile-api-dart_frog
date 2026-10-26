@@ -46,3 +46,8 @@ class TokenExpiredException extends AppException {
   const TokenExpiredException()
     : super('Token expired', statusCode: 401, code: 'TOKEN_EXPIRED');
 }
+
+class ExternalServiceException extends AppException {
+  const ExternalServiceException([String message = 'AI service unavailable'])
+    : super(message, statusCode: 502, code: 'EXTERNAL_SERVICE_ERROR');
+}

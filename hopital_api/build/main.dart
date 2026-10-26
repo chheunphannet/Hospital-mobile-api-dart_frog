@@ -2,7 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dart_frog/dart_frog.dart';
+import 'package:hopital_api/client/embedding_client.dart';
+import 'package:hopital_api/client/google_auth_client.dart';
+import 'package:hopital_api/client/llm_client.dart';
 import 'package:hopital_api/config/env.dart';
+import 'package:hopital_api/helper/hasher.dart';
 import 'package:hopital_api/repository/appointments_repository.dart';
 import 'package:hopital_api/repository/branches_repository.dart';
 import 'package:hopital_api/repository/chat_sessions_repository.dart';
@@ -15,9 +19,9 @@ import 'package:hopital_api/repository/news_repository.dart';
 import 'package:hopital_api/repository/packages_repository.dart';
 import 'package:hopital_api/repository/refresh_token_repository.dart';
 import 'package:hopital_api/repository/users_repository.dart';
-import 'package:hopital_api/client/google_auth_client.dart';
-import 'package:hopital_api/helper/hasher.dart';
 import 'package:hopital_api/service/auth_service.dart';
+import 'package:hopital_api/service/chat_service.dart';
+import 'package:hopital_api/service/ingestion_service.dart';
 import 'package:hopital_api/service/jwt_service.dart';
 import 'package:hopital_api/service/mongo_service.dart';
 import 'package:logging/logging.dart';
@@ -97,8 +101,9 @@ Future<HttpServer> run(Handler handler, InternetAddress ip, int port) async {
   await chatSessionsRepo.createIndex();
 
   //logging
-  Logger.root.level = Env.isProd == 'production' ? Level.INFO : Level.ALL;
+  Logger.root.level = Level.INFO;
   Logger.root.onRecord.listen((r) {
+    if (r.level < Level.INFO) return;
     stdout.writeln(
       jsonEncode({
         'time': r.time.toUtc().toIso8601String(),
@@ -111,6 +116,27 @@ Future<HttpServer> run(Handler handler, InternetAddress ip, int port) async {
     );
   });
 
+  final embeddingClient = EmbeddingClient(apiKey: Env.geminiApiKey);
+  final llmClient = LlmClient(
+    apiKey: Env.geminiApiKey,
+    model: Env.geminiModel,
+  );
+
+  final ingestionService = IngestionService(
+    knowledgeChunksRepo,
+    embeddingClient,
+    doctorsRepo,
+    packagesRepo,
+    clinicsRepo,
+    branchesRepo,
+    healthTipsRepo,
+    newsRepo,
+  );
+
+  if (Env.runIngest == 'true') {
+    await ingestionService.ingestAll();
+  }
+
   // Services
   final jwt = JwtService();
   final hasher = Hasher();
@@ -121,6 +147,12 @@ Future<HttpServer> run(Handler handler, InternetAddress ip, int port) async {
     googleAuthClient: googleAuthClient,
     hasher: hasher,
     refresh: refreshRepo,
+  );
+
+  final chatService = ChatService(
+    embedder: embeddingClient,
+    chunks: knowledgeChunksRepo,
+    llm: llmClient,
   );
 
   return serve(
@@ -138,7 +170,9 @@ Future<HttpServer> run(Handler handler, InternetAddress ip, int port) async {
         .use(provider<KnowledgeChunksRepository>((_) => knowledgeChunksRepo))
         .use(provider<ChatSessionsRepository>((_) => chatSessionsRepo))
         .use(provider<JwtService>((_) => jwt))
-        .use(provider<AuthService>((_) => authService)),
+        .use(provider<AuthService>((_) => authService))
+        .use(provider<LlmClient>((_) => llmClient))
+        .use(provider<ChatService>((_) => chatService)),
     ip,
     port,
   );

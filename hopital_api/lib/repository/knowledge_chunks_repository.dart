@@ -1,11 +1,12 @@
-import 'dart:developer';
-
+import 'package:hopital_api/models/knowledge_chunks.dart';
+import 'package:logging/logging.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class KnowledgeChunksRepository {
   KnowledgeChunksRepository(this._collection);
 
   final DbCollection _collection;
+  static final _log = Logger('KnowledgeChunksRepository');
 
   Future<void> createIndex() async {
     final result = await _collection.db.runCommand({
@@ -35,21 +36,17 @@ class KnowledgeChunksRepository {
         'indexes': [
           {
             'name': 'vector_index',
-            'type':
-                'vectorSearch', //enables k-Nearest Neighbor (kNN) mathematical calculations on AI embeddings
+            'type': 'vectorSearch',
             'definition': {
               'fields': [
                 {
                   'type': 'vector',
-                  'path': 'embedding', // [0.0124, -0.0452, 0.0891, ...]
-                  'numDimensions':
-                      768, // Gemini converts any sentence into a list of exactly 768 numbers.
-                  'similarity':
-                      'cosine', // Cosine similarity measures the angle of meaning between two sentences, not just matching words.
+                  'path': 'embedding',
+                  'numDimensions': 768,
+                  'similarity': 'cosine',
                 },
                 {
-                  'type':
-                      'filter', // Enables pre-filtering before doing AI vector search
+                  'type': 'filter',
                   'path': 'sourceType',
                 },
                 {
@@ -63,12 +60,68 @@ class KnowledgeChunksRepository {
       });
 
       if (result['ok'] != 1) {
-        log('Vector search index response: $result');
+        _log.warning('Vector search index response: $result');
       }
     } catch (e) {
-      log('Vector search index note: $e');
+      _log.warning('Vector search index note: $e');
     }
   }
 
   Future<void> createIndexes() => createIndex();
+
+  Future<void> deleteBySource(String sourceType, String sourceId) async {
+    await _collection.deleteMany({
+      'sourceType': sourceType,
+      'sourceId': sourceId,
+    });
+  }
+
+  Future<void> insert(KnowledgeChunks chunk) async {
+    await _collection.insertOne(chunk.toJson());
+  }
+
+  Future<List<ChunkHit>> search({
+    required List<double> queryEmbedding,
+    int limit = 5,
+    String? sourceType,
+    String? clinic,
+  }) async {
+    final filter = <String, dynamic>{
+      if (sourceType != null) 'sourceType': sourceType,
+      if (clinic != null) 'metadata.clinic': clinic,
+    };
+
+    final pipeline = [
+      {
+        r'$vectorSearch': {
+          'index': 'vector_index',
+          'path': 'embedding',
+          'queryVector': queryEmbedding,
+          'numCandidates': limit * 20,
+          'limit': limit,
+          if (filter.isNotEmpty) 'filter': filter,
+        },
+      },
+      {
+        r'$project': {
+          'embedding': 0,
+          'searchScore': {r'$meta': 'vectorSearchScore'},
+        },
+      },
+    ];
+
+    final docs = await _collection.aggregateToStream(pipeline).toList();
+
+    return docs.map((doc) {
+      final score = (doc['searchScore'] as num).toDouble();
+      doc.remove('searchScore');
+      return ChunkHit(KnowledgeChunks.fromJson(doc), score);
+    }).toList();
+  }
+}
+
+class ChunkHit {
+  const ChunkHit(this.chunk, this.score);
+  final KnowledgeChunks chunk;
+  final double score;
 }

@@ -8,7 +8,7 @@ import 'package:hopital_api/models/users.dart';
 import 'package:hopital_api/repository/refresh_token_repository.dart';
 import 'package:hopital_api/repository/users_repository.dart';
 import 'package:hopital_api/service/jwt_service.dart';
-import 'package:logging/logging.dart';
+// import 'package:logging/logging.dart';
 
 class AuthService {
   AuthService({
@@ -28,7 +28,6 @@ class AuthService {
   final GoogleAuthClient _googleAuthClient;
   final Hasher _hasher;
   final RefreshTokenRepository _refresh;
-
 
   Future<AuthResult> registerWithPassword({
     required String email,

@@ -13,6 +13,9 @@ class Env {
       'REFRESH_TOKEN_TTL',
       'IS_PROD',
       'GOOGLE_CLIENT_ID',
+      'GEMINI_API_KEY',
+      'RUN_INGEST',
+      'GEMINI_MODEL',
       // 'DB_PASSWORD',
       // 'DB_HOST',
       // 'DB_PORT',
@@ -38,4 +41,7 @@ class Env {
   static int get refreshTokenTTL => int.parse(_dotEnv['REFRESH_TOKEN_TTL']!);
   static String get isProd => _dotEnv['IS_PROD']!;
   static String get googleClientId => _dotEnv['GOOGLE_CLIENT_ID']!;
+  static String get geminiApiKey => _dotEnv['GEMINI_API_KEY']!;
+  static String get runIngest => _dotEnv['RUN_INGEST']!;
+  static String get geminiModel => _dotEnv['GEMINI_MODEL']!;
 }

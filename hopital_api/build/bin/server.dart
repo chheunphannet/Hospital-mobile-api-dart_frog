@@ -20,6 +20,7 @@ import '../routes/public/doctors/index.dart' as public_doctors_index;
 import '../routes/public/doctors/[id].dart' as public_doctors_$id;
 import '../routes/public/clinics/index.dart' as public_clinics_index;
 import '../routes/public/clinics/[id].dart' as public_clinics_$id;
+import '../routes/public/chat/index.dart' as public_chat_index;
 import '../routes/public/branches/index.dart' as public_branches_index;
 import '../routes/public/branches/[id].dart' as public_branches_$id;
 import '../routes/auth/register.dart' as auth_register;
@@ -68,6 +69,7 @@ Handler buildRootHandler() {
     ..mount('/public/feedbacks', (context) => buildPublicFeedbacksHandler()(context))
     ..mount('/public/doctors', (context) => buildPublicDoctorsHandler()(context))
     ..mount('/public/clinics', (context) => buildPublicClinicsHandler()(context))
+    ..mount('/public/chat', (context) => buildPublicChatHandler()(context))
     ..mount('/public/branches', (context) => buildPublicBranchesHandler()(context))
     ..mount('/auth', (context) => buildAuthHandler()(context))
     ..mount('/admin/news', (context) => buildAdminNewsHandler()(context))
@@ -132,6 +134,13 @@ Handler buildPublicClinicsHandler() {
   final pipeline = const Pipeline();
   final router = Router()
     ..all('/<id>', (context,id,) => public_clinics_$id.onRequest(context,id,))..all('/', (context) => public_clinics_index.onRequest(context,));
+  return pipeline.addHandler(router);
+}
+
+Handler buildPublicChatHandler() {
+  final pipeline = const Pipeline();
+  final router = Router()
+    ..all('/', (context) => public_chat_index.onRequest(context,));
   return pipeline.addHandler(router);
 }
 
