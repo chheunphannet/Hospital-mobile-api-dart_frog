@@ -17,9 +17,11 @@ import 'package:hopital_api/repository/health_tips_repository.dart';
 import 'package:hopital_api/repository/knowledge_chunks_repository.dart';
 import 'package:hopital_api/repository/news_repository.dart';
 import 'package:hopital_api/repository/packages_repository.dart';
+import 'package:hopital_api/repository/payments_repository.dart';
 import 'package:hopital_api/repository/refresh_token_repository.dart';
 import 'package:hopital_api/repository/users_repository.dart';
 import 'package:hopital_api/service/auth_service.dart';
+import 'package:hopital_api/service/bakong_service.dart';
 import 'package:hopital_api/service/chat_service.dart';
 import 'package:hopital_api/service/ingestion_service.dart';
 import 'package:hopital_api/service/jwt_service.dart';
@@ -100,6 +102,12 @@ Future<HttpServer> run(Handler handler, InternetAddress ip, int port) async {
   );
   await chatSessionsRepo.createIndex();
 
+  //payments
+  final paymentsRepo = PaymentsRepository(
+    mongoService.collection('payments'),
+  );
+  await paymentsRepo.createIndex();
+
   //logging
   Logger.root.level = Level.INFO;
   Logger.root.onRecord.listen((r) {
@@ -155,6 +163,8 @@ Future<HttpServer> run(Handler handler, InternetAddress ip, int port) async {
     llm: llmClient,
   );
 
+  final bakongService = BakongService();
+
   return serve(
     handler
         .use(provider<UsersRepository>((_) => usersRepo))
@@ -164,6 +174,7 @@ Future<HttpServer> run(Handler handler, InternetAddress ip, int port) async {
         .use(provider<ClinicsRepository>((_) => clinicsRepo))
         .use(provider<DoctorsRepository>((_) => doctorsRepo))
         .use(provider<AppointmentsRepository>((_) => appointmentsRepo))
+        .use(provider<PaymentsRepository>((_) => paymentsRepo))
         .use(provider<NewsRepository>((_) => newsRepo))
         .use(provider<FeedbacksRepository>((_) => feedbacksRepo))
         .use(provider<HealthTipsRepository>((_) => healthTipsRepo))
@@ -172,7 +183,8 @@ Future<HttpServer> run(Handler handler, InternetAddress ip, int port) async {
         .use(provider<JwtService>((_) => jwt))
         .use(provider<AuthService>((_) => authService))
         .use(provider<LlmClient>((_) => llmClient))
-        .use(provider<ChatService>((_) => chatService)),
+        .use(provider<ChatService>((_) => chatService))
+        .use(provider<BakongService>((_) => bakongService)),
     ip,
     port,
   );

@@ -16,6 +16,8 @@ class Env {
       'GEMINI_API_KEY',
       'RUN_INGEST',
       'GEMINI_MODEL',
+      'BAKONG_TOKEN',
+      'BAKONG_USERNAME',
       // 'DB_PASSWORD',
       // 'DB_HOST',
       // 'DB_PORT',
@@ -44,4 +46,6 @@ class Env {
   static String get geminiApiKey => _dotEnv['GEMINI_API_KEY']!;
   static String get runIngest => _dotEnv['RUN_INGEST']!;
   static String get geminiModel => _dotEnv['GEMINI_MODEL']!;
+  static String get bakongToken => _dotEnv['BAKONG_TOKEN']!;
+  static String get bakongUsername => _dotEnv['BAKONG_USERNAME']!;
 }

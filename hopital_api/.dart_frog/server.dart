@@ -9,6 +9,8 @@ import '../main.dart' as entrypoint;
 import '../routes/index.dart' as index;
 import '../routes/users/profile.dart' as users_profile;
 import '../routes/users/packages.dart' as users_packages;
+import '../routes/users/payments/index.dart' as users_payments_index;
+import '../routes/users/payments/[id]/verify.dart' as users_payments_$id_verify;
 import '../routes/users/appointments/index.dart' as users_appointments_index;
 import '../routes/users/appointments/[id].dart' as users_appointments_$id;
 import '../routes/public/news/index.dart' as public_news_index;
@@ -61,6 +63,8 @@ Handler buildRootHandler() {
   final router = Router()
     ..mount('/', (context) => buildHandler()(context))
     ..mount('/users', (context) => buildUsersHandler()(context))
+    ..mount('/users/payments', (context) => buildUsersPaymentsHandler()(context))
+    ..mount('/users/payments/<id>', (context,id,) => buildUsersPayments$idHandler(id,)(context))
     ..mount('/users/appointments', (context) => buildUsersAppointmentsHandler()(context))
     ..mount('/public/news', (context) => buildPublicNewsHandler()(context))
     ..mount('/public/health_tips', (context) => buildPublicHealthTipsHandler()(context))
@@ -90,6 +94,20 @@ Handler buildUsersHandler() {
   final pipeline = const Pipeline().addMiddleware(users_middleware.middleware);
   final router = Router()
     ..all('/packages', (context) => users_packages.onRequest(context,))..all('/profile', (context) => users_profile.onRequest(context,));
+  return pipeline.addHandler(router);
+}
+
+Handler buildUsersPaymentsHandler() {
+  final pipeline = const Pipeline().addMiddleware(users_middleware.middleware);
+  final router = Router()
+    ..all('/', (context) => users_payments_index.onRequest(context,));
+  return pipeline.addHandler(router);
+}
+
+Handler buildUsersPayments$idHandler(String id,) {
+  final pipeline = const Pipeline().addMiddleware(users_middleware.middleware);
+  final router = Router()
+    ..all('/verify', (context) => users_payments_$id_verify.onRequest(context,id,));
   return pipeline.addHandler(router);
 }
 

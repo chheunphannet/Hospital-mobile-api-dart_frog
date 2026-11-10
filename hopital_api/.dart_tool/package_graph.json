@@ -13,6 +13,7 @@
         "dart_jsonwebtoken",
         "dotenv",
         "http",
+        "khqrcode",
         "logging",
         "mongo_dart"
       ],
@@ -66,6 +67,15 @@
       "name": "dart_frog_lint",
       "version": "0.1.2",
       "dependencies": []
+    },
+    {
+      "name": "khqrcode",
+      "version": "1.0.2",
+      "dependencies": [
+        "crypto",
+        "flutter",
+        "http"
+      ]
     },
     {
       "name": "crypto",
@@ -301,9 +311,9 @@
     },
     {
       "name": "package_config",
-      "version": "3.0.0",
+      "version": "2.2.0",
       "dependencies": [
-        "meta"
+        "path"
       ]
     },
     {
@@ -378,7 +388,7 @@
     },
     {
       "name": "analyzer",
-      "version": "14.4.0",
+      "version": "13.0.0",
       "dependencies": [
         "_fe_analyzer_shared",
         "collection",
@@ -395,13 +405,25 @@
       ]
     },
     {
+      "name": "flutter",
+      "version": "0.0.0",
+      "dependencies": [
+        "characters",
+        "collection",
+        "material_color_utilities",
+        "meta",
+        "sky_engine",
+        "vector_math"
+      ]
+    },
+    {
       "name": "web",
       "version": "1.1.1",
       "dependencies": []
     },
     {
       "name": "meta",
-      "version": "1.19.0",
+      "version": "1.18.0",
       "dependencies": []
     },
     {
@@ -622,10 +644,33 @@
     },
     {
       "name": "_fe_analyzer_shared",
-      "version": "108.0.0",
+      "version": "100.0.0",
       "dependencies": [
-        "meta"
+        "meta",
+        "source_span"
       ]
+    },
+    {
+      "name": "sky_engine",
+      "version": "0.0.0",
+      "dependencies": []
+    },
+    {
+      "name": "vector_math",
+      "version": "2.2.0",
+      "dependencies": []
+    },
+    {
+      "name": "material_color_utilities",
+      "version": "0.13.0",
+      "dependencies": [
+        "collection"
+      ]
+    },
+    {
+      "name": "characters",
+      "version": "1.4.1",
+      "dependencies": []
     },
     {
       "name": "adaptive_number",

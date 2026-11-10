@@ -115,4 +115,13 @@ class AppointmentsRepository {
     final docs = await cursor.toList();
     return docs.map(Appointments.fromJson).toList();
   }
+
+  // Update appointment status (e.g. 'confirmed', 'cancelled')
+  Future<bool> updateStatus(String id, String status) async {
+    final result = await _collection.updateOne(
+      where.id(ObjectId.fromHexString(id)),
+      modify.set('status', status),
+    );
+    return result.isSuccess;
+  }
 }
